@@ -24,3 +24,29 @@ object MonadOption {
 
     implicit def eqMop[A: Eq]: Eq[MonadOption[A]] = Eq.fromUniversalEquals
 }
+
+sealed trait AlgoList[+A]
+case object Nil extends AlgoList[Nothing]
+case class Cons[+A](head: A, tail: AlgoList[A]) extends AlgoList[A]
+
+object AlgoList{
+
+  def append[A](a1: AlgoList[A], a2: AlgoList[A]): AlgoList[A] =  a1 match {
+    case Nil => a2
+    case Cons(h,t) => Cons(h, append(t, a2))
+  } 
+
+  implicit val al: Monad[AlgoList] = new Monad[AlgoList]{
+
+    override def flatMap[A, B](fa: AlgoList[A])(f: A => AlgoList[B]): AlgoList[B] = ???
+
+    override def tailRecM[A, B](a: A)(f: A => AlgoList[Either[A,B]]): AlgoList[B] = flatMap(f(a)) {
+      case Right(b) => pure(b)
+      case Left(nextA) => tailRecM(nextA)(f)
+    }
+
+    override def pure[A](x: A): AlgoList[A] = ???
+  }
+
+  implicit def eqMop[A: Eq]: Eq[AlgoList[A]] = Eq.fromUniversalEquals
+}

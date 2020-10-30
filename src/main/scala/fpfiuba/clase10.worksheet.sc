@@ -2,8 +2,7 @@ import scala.util.Try
 import cats._
 
 
+val ll: List[String] = Nil
 
-Monad[List].pure("a")
-
-Monad[List].flatMap(List("hola","mundo","!"))( (s: String) => s.toList )
+ll.appended("hello")
 
